@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
-import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Activity } from 'lucide-react';
 import { getLineStyle } from '@/utils/lineStyles';
 import { powerStationIcon, windFarmIcon, solarParkIcon } from '@/utils/customMarkers';
+import { InfrastructurePopup } from './InfrastructurePopup';
 import type { Substation, WindFarm, SolarPark, TransmissionLine, MapFilters } from '@/types/powerGrid';
 
 // Gujarat bounds
@@ -68,10 +68,10 @@ export default function Map({
       center={[22.2587, 71.1924]}
       zoom={7}
       style={{ height: '100%', width: '100%' }}
-      maxBounds={[
-        [GUJARAT_BOUNDS.minLat, GUJARAT_BOUNDS.minLng],
-        [GUJARAT_BOUNDS.maxLat, GUJARAT_BOUNDS.maxLng]
-      ]}
+      // maxBounds={[
+      //   [GUJARAT_BOUNDS.minLat, GUJARAT_BOUNDS.minLng],
+      //   [GUJARAT_BOUNDS.maxLat, GUJARAT_BOUNDS.maxLng]
+      // ]}
       minZoom={7}
     >
       <TileLayer
@@ -85,13 +85,8 @@ export default function Map({
           position={[substation.latitude, substation.longitude]}
           icon={powerStationIcon}
         >
-          <Popup>
-            <div className="p-2">
-              <h3 className="text-lg font-bold">{substation.name}</h3>
-              <p>Voltage: {substation.voltage_level}</p>
-              <p>Capacity: {substation.transformer_capacity} MVA</p>
-              <p>Reliability: {substation.reliability_percentage}%</p>
-            </div>
+          <Popup maxWidth={500} minWidth={400}>
+            <InfrastructurePopup type="substation" data={substation} />
           </Popup>
         </Marker>
       ))}
@@ -102,13 +97,8 @@ export default function Map({
           position={[farm.latitude, farm.longitude]}
           icon={windFarmIcon}
         >
-          <Popup>
-            <div className="p-2">
-              <h3 className="text-lg font-bold">{farm.owner}</h3>
-              <p>Village: {farm.village}</p>
-              <p>Capacity: {farm.installed_capacity} MW</p>
-              <p>Substation: {farm.substation}</p>
-            </div>
+          <Popup maxWidth={500} minWidth={400}>
+            <InfrastructurePopup type="windFarm" data={farm} />
           </Popup>
         </Marker>
       ))}
@@ -149,12 +139,8 @@ export default function Map({
           position={[park.latitude, park.longitude]}
           icon={solarParkIcon}
         >
-          <Popup>
-            <div className="p-2">
-              <h3 className="text-lg font-bold">{park.name}</h3>
-              <p>DC Capacity: {park.total_capacity_dc} MW</p>
-              <p>AC Capacity: {park.total_capacity_ac} MW</p>
-            </div>
+          <Popup maxWidth={500} minWidth={400}>
+            <InfrastructurePopup type="solarPark" data={park} />
           </Popup>
         </Marker>
       ))}
