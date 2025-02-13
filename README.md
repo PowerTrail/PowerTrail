@@ -9,7 +9,6 @@ PowerTrail is a powerful tool designed to help you manage and optimize your powe
 ## Features
 
 - Real-time power consumption monitoring
-- Historical data analysis
 - Customizable alerts and notifications
 - 3d Model Visualization
 
