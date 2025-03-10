@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { Activity, Battery, Calendar, Factory, Power, Shield, Zap, Info, Settings, Gauge, Users } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Activity, Battery, Calendar, Factory, Power, Shield, Zap, Info, Settings, Gauge, Users, Compass, Eye, ArrowLeft, ArrowRight, ArrowUp, ArrowDown } from 'lucide-react';
 import type { Substation, WindFarm, SolarPark } from '@/types/powerGrid';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 interface PopupProps {
   type: 'substation' | 'windFarm' | 'solarPark';
@@ -11,27 +12,43 @@ interface PopupProps {
 
 const MODEL_CONFIGS = {
   substation: {
-    url: 'https://sketchfab.com/models/1e9432d8baac4e169d93b78039cdcba3/embed?autostart=1&ui_controls=1&ui_infos=1&ui_watermark=1',
-    title: 'Electrical Substation 3D Model'
+    url: "T:\INTERN\PowerTrail\a1b2.skp", // Replace with your model URL
+    title: 'Electrical Substation 3D Model',
+    supportsFPV: true // Set to true for your custom model
   },
   windFarm: {
     url: 'https://sketchfab.com/models/6c32b85f43424ed8be9d6404a231d85d/embed?autostart=1&ui_controls=1&ui_infos=1&ui_watermark=1',
-    title: 'Wind Farm 3D Model'
+    title: 'Wind Farm 3D Model',
+    supportsFPV: false
   },
   solarPark: {
     url: 'https://sketchfab.com/models/5ad8541772a14b24a196878074aba4af/embed?autostart=1&ui_controls=1&ui_infos=1&ui_watermark=1',
-    title: 'Solar Park 3D Model'
+    title: 'Solar Park 3D Model',
+    supportsFPV: false
   }
 };
 
 interface IframeProps {
   type: keyof typeof MODEL_CONFIGS;
   className?: string;
+  viewMode: 'standard' | 'first-person';
 }
 
-function Model3D({ type, className }: IframeProps) {
+function Model3D({ type, className, viewMode }: IframeProps) {
   const config = MODEL_CONFIGS[type];
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Modify URL based on viewMode for models that support FPV
+  const modelUrl = () => {
+    let url = config.url;
+    if (config.supportsFPV && viewMode === 'first-person') {
+      // Add first-person view parameters to your custom model URL
+      // This will depend on your model platform's API (Sketchfab, etc.)
+      url += url.includes('?') ? '&' : '?';
+      url += 'fpv=1&auto_rotate=0&camera_mode=first_person';
+    }
+    return url;
+  };
 
   return (
     <div className={cn("relative w-full aspect-video rounded-lg overflow-hidden", className)}>
@@ -43,7 +60,7 @@ function Model3D({ type, className }: IframeProps) {
       <iframe
         title={config.title}
         className="absolute inset-0 w-full h-full"
-        src={config.url}
+        src={modelUrl()}
         onLoad={() => setIsLoading(false)}
         allow="autoplay; fullscreen; xr-spatial-tracking"
         allowFullScreen
@@ -53,7 +70,48 @@ function Model3D({ type, className }: IframeProps) {
   );
 }
 
+function FirstPersonControls({ type }: { type: keyof typeof MODEL_CONFIGS }) {
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  
+  // Controls for navigation in first-person view
+  const sendCommand = (command: string) => {
+    if (iframeRef.current?.contentWindow) {
+      // This would need to be customized based on your model viewer's API
+      iframeRef.current.contentWindow.postMessage({
+        action: 'navigate',
+        direction: command
+      }, '*');
+    }
+  };
+
+  return (
+    <div className="mt-4 bg-gray-50 p-4 rounded-lg">
+      <h4 className="text-sm font-medium text-gray-500 mb-3">First-Person Navigation</h4>
+      <div className="grid grid-cols-3 gap-2">
+        <div></div>
+        <Button size="sm" onClick={() => sendCommand('forward')} className="flex items-center justify-center">
+          <ArrowUp className="h-4 w-4" />
+        </Button>
+        <div></div>
+        
+        <Button size="sm" onClick={() => sendCommand('left')} className="flex items-center justify-center">
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <Button size="sm" onClick={() => sendCommand('down')} className="flex items-center justify-center">
+          <ArrowDown className="h-4 w-4" />
+        </Button>
+        <Button size="sm" onClick={() => sendCommand('right')} className="flex items-center justify-center">
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export function InfrastructurePopup({ type, data }: PopupProps) {
+  const [viewMode, setViewMode] = useState<'standard' | 'first-person'>('standard');
+  const supportsFirstPerson = MODEL_CONFIGS[type].supportsFPV;
+
   if (type === 'substation') {
     const substation = data as Substation;
     return (
@@ -100,7 +158,35 @@ export function InfrastructurePopup({ type, data }: PopupProps) {
           </TabsContent>
 
           <TabsContent value="3d" className="mt-4">
-            <Model3D type="substation" />
+            {supportsFirstPerson && (
+              <div className="mb-4 flex items-center justify-between">
+                <h4 className="text-sm font-medium">View Mode</h4>
+                <div className="flex border rounded-md overflow-hidden">
+                  <button
+                    onClick={() => setViewMode('standard')}
+                    className={cn(
+                      "px-3 py-1 text-sm flex items-center gap-1",
+                      viewMode === 'standard' ? "bg-blue-500 text-white" : "bg-gray-100"
+                    )}
+                  >
+                    <Compass className="w-4 h-4" /> Standard
+                  </button>
+                  <button
+                    onClick={() => setViewMode('first-person')}
+                    className={cn(
+                      "px-3 py-1 text-sm flex items-center gap-1",
+                      viewMode === 'first-person' ? "bg-blue-500 text-white" : "bg-gray-100"
+                    )}
+                  >
+                    <Eye className="w-4 h-4" /> First Person
+                  </button>
+                </div>
+              </div>
+            )}
+            <Model3D type="substation" viewMode={viewMode} />
+            {supportsFirstPerson && viewMode === 'first-person' && (
+              <FirstPersonControls type="substation" />
+            )}
           </TabsContent>
         </Tabs>
       </div>
@@ -154,7 +240,7 @@ export function InfrastructurePopup({ type, data }: PopupProps) {
           </TabsContent>
 
           <TabsContent value="3d" className="mt-4">
-            <Model3D type="windFarm" />
+            <Model3D type="windFarm" viewMode="standard" />
           </TabsContent>
         </Tabs>
       </div>
@@ -207,7 +293,7 @@ export function InfrastructurePopup({ type, data }: PopupProps) {
           </TabsContent>
 
           <TabsContent value="3d" className="mt-4">
-            <Model3D type="solarPark" />
+            <Model3D type="solarPark" viewMode="standard" />
           </TabsContent>
         </Tabs>
       </div>
