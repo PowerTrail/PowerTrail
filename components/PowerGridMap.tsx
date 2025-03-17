@@ -20,7 +20,7 @@ import type { MapFilters } from '@/types/powerGrid';
 const Map = dynamic(() => import('@/components/Map'), { 
   ssr: false,
   loading: () => (
-    <div className="h-[700px] flex items-center justify-center">
+    <div className="h-full w-full flex items-center justify-center">
       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
     </div>
   )
@@ -45,7 +45,7 @@ export default function PowerGridMap() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-[700px]">
+      <div className="flex items-center justify-center h-full">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
       </div>
     );
@@ -53,7 +53,7 @@ export default function PowerGridMap() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-[700px] text-red-500">
+      <div className="flex items-center justify-center h-full text-red-500">
         <AlertTriangle className="w-6 h-6 mr-2" />
         <span>{error}</span>
       </div>
@@ -61,8 +61,8 @@ export default function PowerGridMap() {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-      <Card className="p-6 md:col-span-1 bg-white/50 backdrop-blur-lg">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 h-full">
+      <Card className="p-6 md:col-span-1 bg-white/50 backdrop-blur-lg max-h-full overflow-y-auto">
         <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2">
           <Gauge className="w-6 h-6" />
           Controls
@@ -137,7 +137,7 @@ export default function PowerGridMap() {
         </div>
       </Card>
 
-      <div className="md:col-span-3 h-[700px] rounded-xl overflow-hidden">
+      <div className="md:col-span-3 h-full relative rounded-xl overflow-hidden">
         <Map 
           substations={filteredSubstations}
           windFarms={data.windFarms}

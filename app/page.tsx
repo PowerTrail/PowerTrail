@@ -9,7 +9,7 @@ const PowerGridMap = dynamic(
   { 
     ssr: false,
     loading: () => (
-      <div className="h-[700px] flex items-center justify-center">
+      <div className="h-screen flex items-center justify-center">
         Loading map...
       </div>
     )
@@ -18,17 +18,19 @@ const PowerGridMap = dynamic(
 
 export default function HomePage() {
   return (
-    <main className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Power Grid Infrastructure</h1>
-      <Suspense 
-        fallback={
-          <div className="h-[700px] flex items-center justify-center">
-            Loading map...
-          </div>
-        }
-      >
-        <PowerGridMap />
-      </Suspense>
+    <main className="container mx-auto p-4 h-screen flex flex-col">
+      <h1 className="text-3xl font-bold mb-4">Power Grid Infrastructure</h1>
+      <div className="flex-grow">
+        <Suspense 
+          fallback={
+            <div className="h-full flex items-center justify-center">
+              Loading map...
+            </div>
+          }
+        >
+          <PowerGridMap />
+        </Suspense>
+      </div>
     </main>
   );
 }

@@ -97,6 +97,8 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   border-radius: 0.5rem;
   overflow: hidden;
+  height: 100% !important;
+  width: 100% !important;
 }
 
 /* Hide attribution until hover */
@@ -122,14 +124,6 @@
   color: #333;
 }
 
-/* Override any OSM styles that might show unwanted labels */
-.leaflet-tile-pane text[data-name*="Pakistan"],
-.leaflet-tile-pane .leaflet-tile text[data-name*="Pakistan"] {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-}
-
 @layer base {
   * {
     @apply border-border;
@@ -139,6 +133,68 @@
   }
 }
 
-.leaflet-container {
-  border-radius: 0.5rem;
+/* FIX FOR MAP CONTAINER SIZING */
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+body > div, #root, main, .container {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.container {
+  max-width: 100% !important;
+  padding: 1rem;
+}
+
+/* Grid container for map and controls */
+.grid {
+  height: calc(100% - 50px); /* Account for the header */
+  width: 100%;
+}
+
+/* Map container specific fixes */
+.map-container {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 0;
+}
+
+/* Fix for the controls */
+@media (max-width: 768px) {
+  .md\:col-span-1 {
+    grid-column: span 4 / span 4;
+    margin-bottom: 1rem;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  
+  .md\:col-span-3 {
+    grid-column: span 4 / span 4;
+    height: calc(100% - 350px);
+  }
+  
+  .grid {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* Ensure correct positioning of popup */
+.leaflet-popup {
+  margin-bottom: 20px;
+}
+
+.leaflet-popup-content {
+  margin: 0;
+  padding: 0;
 }

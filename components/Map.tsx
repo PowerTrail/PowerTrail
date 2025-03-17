@@ -1,5 +1,5 @@
 import { useMemo, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Polyline, Rectangle, GeoJSON, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Activity } from 'lucide-react';
 import { getLineStyle } from '@/utils/lineStyles';
@@ -8,7 +8,7 @@ import { InfrastructurePopup } from './InfrastructurePopup';
 import type { Substation, WindFarm, SolarPark, TransmissionLine, MapFilters } from '@/types/powerGrid';
 import L from 'leaflet';
 
-// Gujarat bounds
+// Gujarat bounds with extra padding
 const GUJARAT_BOUNDS = {
   minLat: 20.1,
   maxLat: 24.7,
@@ -18,59 +18,42 @@ const GUJARAT_BOUNDS = {
 
 const INITIAL_CENTER: [number, number] = [22.2587, 71.8924];
 
-// Create more practical masks for areas outside Gujarat
-// These values are tighter to improve UI and prevent showing non-Indian territory
-const MASK_BOUNDS = [
-  // Western mask (covers Pakistan)
-  [[GUJARAT_BOUNDS.minLat - 1, GUJARAT_BOUNDS.minLng - 5], [GUJARAT_BOUNDS.maxLat + 1, GUJARAT_BOUNDS.minLng - 0.1]],
-  // Northern mask
-  [[GUJARAT_BOUNDS.maxLat + 0.1, GUJARAT_BOUNDS.minLng - 5], [GUJARAT_BOUNDS.maxLat + 5, GUJARAT_BOUNDS.maxLng + 5]],
-  // Southern mask (Arabian Sea)
-  [[GUJARAT_BOUNDS.minLat - 5, GUJARAT_BOUNDS.minLng - 5], [GUJARAT_BOUNDS.minLat - 0.1, GUJARAT_BOUNDS.maxLng + 5]],
-  // Eastern mask (parts of adjacent states)
-  [[GUJARAT_BOUNDS.minLat - 1, GUJARAT_BOUNDS.maxLng + 0.1], [GUJARAT_BOUNDS.maxLat + 1, GUJARAT_BOUNDS.maxLng + 5]]
-];
+// Component to fix map display and fitting
+function MapController() {
+  const map = useMap();
+  
+  useEffect(() => {
+    // Force map to resize and fit bounds
+    setTimeout(() => {
+      map.invalidateSize();
+      
+      // Fit map bounds to Gujarat region
+      map.fitBounds([
+        [GUJARAT_BOUNDS.minLat, GUJARAT_BOUNDS.minLng],
+        [GUJARAT_BOUNDS.maxLat, GUJARAT_BOUNDS.maxLng]
+      ]);
+    }, 100);
+    
+    // Handle window resize
+    const handleResize = () => {
+      map.invalidateSize();
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [map]);
 
-// Define the mask style
-const maskStyle = {
-  fillColor: '#fff',
-  fillOpacity: 1,
-  stroke: false,
-  interactive: false
-};
+  return null;
+}
 
-// Major cities in Gujarat with their coordinates
-const GUJARAT_CITIES = [
-  { name: 'Ahmedabad', position: [23.0225, 72.5714] },
-  { name: 'Vadodara', position: [22.3072, 73.1812] },
-  { name: 'Surat', position: [21.1702, 72.8311] },
-  { name: 'Rajkot', position: [22.3039, 70.8022] },
-  { name: 'Bhavnagar', position: [21.7645, 72.1519] },
-  { name: 'Jamnagar', position: [22.4707, 70.0577] },
-  { name: 'Gandhinagar', position: [23.2156, 72.6369] },
-  { name: 'Junagadh', position: [21.5222, 70.4579] },
-  { name: 'Anand', position: [22.5645, 72.9289] },
-  { name: 'Bharuch', position: [21.7051, 72.9959] },
-  { name: 'Nadiad', position: [22.6916, 72.8634] },
-  { name: 'Porbandar', position: [21.6417, 69.6293] },
-  { name: 'Ankleshwar', position: [21.6266, 73.0017] },
-  { name: 'Morbi', position: [22.8252, 70.8374] },
-  { name: 'Valsad', position: [20.5992, 72.9342] },
-  { name: 'Navsari', position: [20.9467, 72.9520] },
-  { name: 'Veraval', position: [20.9070, 70.3680] },
-  { name: 'Bhuj', position: [23.2419, 69.6669] },
-  { name: 'Godhra', position: [22.7788, 73.6143] },
-  { name: 'Palanpur', position: [24.1747, 72.4323] }
-];
-
-// Component to add only district labels and state name
+// Component to add district labels
 function EnhancedLabels() {
   const map = useMap();
   
   useEffect(() => {
     const mapLabels: L.Marker[] = [];
     
-    // Only add district labels where needed (for areas that may not be clear on the map)
+    // Only add district labels where needed
     const districts = [
       { name: 'KUTCH', position: [23.7, 69.8], size: 150 },
       { name: 'SAURASHTRA', position: [21.6, 70.5], size: 150 }
@@ -132,7 +115,7 @@ export default function Map({
   transmissionLines,
   filters
 }: MapComponentProps) {
-  // Memoized filtered and validated data
+  // Memoized filtered data
   const filteredSubstations = useMemo(() => 
     substations.filter(substation => 
       filters.showSubstations && 
@@ -169,14 +152,14 @@ export default function Map({
     <MapContainer
       center={INITIAL_CENTER}
       zoom={7}
-      style={{ height: '100%', width: '100%' }}
+      className="map-container"
       maxBounds={[
-        [GUJARAT_BOUNDS.minLat - 1, GUJARAT_BOUNDS.minLng - 1],
-        [GUJARAT_BOUNDS.maxLat + 1, GUJARAT_BOUNDS.maxLng + 1]
+        [GUJARAT_BOUNDS.minLat - 2, GUJARAT_BOUNDS.minLng - 2],
+        [GUJARAT_BOUNDS.maxLat + 2, GUJARAT_BOUNDS.maxLng + 2]
       ]}
-      minZoom={7}
+      minZoom={6}
       maxZoom={12}
-      boundsOptions={{ padding: [20, 20] }}
+      boundsOptions={{ padding: [0, 0] }}
       maxBoundsViscosity={1.0}
       zoomControl={false}
     >
@@ -187,38 +170,17 @@ export default function Map({
         </div>
       </div>
 
-      {/* Using CartoDB Voyager map which has better labeled Indian cities and less emphasis on foreign locations */}
+      {/* Map controller to properly set the bounds */}
+      <MapController />
+
+      {/* Using CartoDB Voyager map */}
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>'
         url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png"
         noWrap={true}
-        bounds={[
-          [GUJARAT_BOUNDS.minLat, GUJARAT_BOUNDS.minLng],
-          [GUJARAT_BOUNDS.maxLat, GUJARAT_BOUNDS.maxLng]
-        ]}
-        maxZoom={19}
       />
       
-      {/* Additional overlay to cover non-Indian territory */}
-      <Rectangle 
-        bounds={[[GUJARAT_BOUNDS.minLat - 5, GUJARAT_BOUNDS.minLng - 10], [GUJARAT_BOUNDS.maxLat + 5, GUJARAT_BOUNDS.minLng - 0.2]]}
-        pathOptions={{
-          fillColor: '#fff',
-          fillOpacity: 1,
-          stroke: false,
-          interactive: false
-        }}
-      />
-
       <EnhancedLabels />
-
-      {MASK_BOUNDS.map((bounds, index) => (
-        <Rectangle 
-          key={index}
-          bounds={bounds as [number, number][]}
-          pathOptions={maskStyle}
-        />
-      ))}
       
       {filteredSubstations.map(substation => (
         <Marker
