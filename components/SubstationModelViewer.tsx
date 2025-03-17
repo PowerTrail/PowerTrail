@@ -256,7 +256,7 @@ export function SubstationModelViewer({ isOpen, onOpenChange }: SubstationModelV
     
     // Get focus position
     const model = modelMeshesRef.current[componentId];
-    let targetPosition;
+    let targetPosition: THREE.Vector3;
     
     if (model) {
       const box = new THREE.Box3().setFromObject(model);
