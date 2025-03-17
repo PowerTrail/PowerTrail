@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { Activity, Battery, Calendar, Factory, Power, Shield, Zap, Info, Settings, Gauge, Users } from 'lucide-react';
+import { Activity, Battery, Calendar, Factory, Power, Shield, Zap, Info, Settings, Gauge, Users, Box } from 'lucide-react';
 import type { Substation, WindFarm, SolarPark } from '@/types/powerGrid';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { SubstationModelViewer } from './SubstationModelViewer'; // Changed import path
 
 interface PopupProps {
   type: 'substation' | 'windFarm' | 'solarPark';
@@ -54,56 +56,89 @@ function Model3D({ type, className }: IframeProps) {
 }
 
 export function InfrastructurePopup({ type, data }: PopupProps) {
+  const [substationViewerOpen, setSubstationViewerOpen] = useState(false);
+
   if (type === 'substation') {
     const substation = data as Substation;
     return (
-      <div className="p-4 min-w-[400px] max-w-[600px]">
-        <Tabs defaultValue="info" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="info" className="flex items-center gap-2">
-              <Info className="w-4 h-4" /> Info
-            </TabsTrigger>
-            <TabsTrigger value="technical" className="flex items-center gap-2">
-              <Settings className="w-4 h-4" /> Technical
-            </TabsTrigger>
-            <TabsTrigger value="3d" className="flex items-center gap-2">
-              <Gauge className="w-4 h-4" /> 3D View
-            </TabsTrigger>
-          </TabsList>
+      <>
+        <div className="p-4 min-w-[400px] max-w-[600px]">
+          <Tabs defaultValue="info" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="info" className="flex items-center gap-2">
+                <Info className="w-4 h-4" /> Info
+              </TabsTrigger>
+              <TabsTrigger value="technical" className="flex items-center gap-2">
+                <Settings className="w-4 h-4" /> Technical
+              </TabsTrigger>
+              <TabsTrigger value="3d" className="flex items-center gap-2">
+                <Gauge className="w-4 h-4" /> 3D View
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="info" className="mt-4">
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold flex items-center gap-2">
-                <Zap className="w-6 h-6 text-yellow-500" />
-                {substation.name}
-              </h3>
+            <TabsContent value="info" className="mt-4">
+              <div className="space-y-4">
+                <h3 className="text-xl font-bold flex items-center gap-2">
+                  <Zap className="w-6 h-6 text-yellow-500" />
+                  {substation.name}
+                </h3>
 
-              <div className="grid grid-cols-2 gap-3">
-                <InfoItem icon={<Battery className="text-blue-500" />} label="Voltage" value={substation.voltage_level} />
-                <InfoItem icon={<Power className="text-green-500" />} label="Capacity" value={`${substation.transformer_capacity} MVA`} />
-                <InfoItem icon={<Shield className="text-purple-500" />} label="Reliability" value={`${substation.reliability_percentage}%`} />
-                {substation.feeders_count && (
-                  <InfoItem icon={<Users className="text-orange-500" />} label="Feeders" value={String(substation.feeders_count)} />
-                )}
+                <div className="grid grid-cols-2 gap-3">
+                  <InfoItem icon={<Battery className="text-blue-500" />} label="Voltage" value={substation.voltage_level} />
+                  <InfoItem icon={<Power className="text-green-500" />} label="Capacity" value={`${substation.transformer_capacity} MVA`} />
+                  <InfoItem icon={<Shield className="text-purple-500" />} label="Reliability" value={`${substation.reliability_percentage}%`} />
+                  {substation.feeders_count && (
+                    <InfoItem icon={<Users className="text-orange-500" />} label="Feeders" value={String(substation.feeders_count)} />
+                  )}
+                </div>
               </div>
-            </div>
-          </TabsContent>
+            </TabsContent>
 
-          <TabsContent value="technical" className="mt-4 space-y-4">
-            <div className="space-y-3">
-              <TechnicalItem label="Control System" value={substation.control_system} />
-              <TechnicalItem label="Last Maintenance" value={substation.last_maintenance_date} />
-              <TechnicalItem label="Backup Systems" value={substation.backup_systems} />
-              <TechnicalItem label="Safety Rating" value={substation.safety_certification} />
-              <TechnicalItem label="Status" value={substation.operational_status} />
-            </div>
-          </TabsContent>
+            <TabsContent value="technical" className="mt-4 space-y-4">
+              <div className="space-y-3">
+                <TechnicalItem label="Control System" value={substation.control_system} />
+                <TechnicalItem label="Last Maintenance" value={substation.last_maintenance_date} />
+                <TechnicalItem label="Backup Systems" value={substation.backup_systems} />
+                <TechnicalItem label="Safety Rating" value={substation.safety_certification} />
+                <TechnicalItem label="Status" value={substation.operational_status} />
+              </div>
+            </TabsContent>
 
-          <TabsContent value="3d" className="mt-4">
-            <Model3D type="substation" />
-          </TabsContent>
-        </Tabs>
-      </div>
+            <TabsContent value="3d" className="mt-4">
+              <div className="space-y-4">
+                <div className="aspect-video bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg flex items-center justify-center">
+                  <div className="text-center p-6">
+                    <Box className="w-12 h-12 mx-auto text-blue-400 mb-2" />
+                    <h3 className="text-lg font-medium text-white mb-2">Interactive Substation Explorer</h3>
+                    <p className="text-gray-300 mb-4">Explore the substation components in our interactive 3D model</p>
+                    <Button 
+                      onClick={() => setSubstationViewerOpen(true)}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      Launch 3D Explorer
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="text-sm text-gray-600">
+                  <p className="font-medium mb-1">Key Features:</p>
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li>Explore individual substation components</li>
+                    <li>Get detailed information about each part</li>
+                    <li>Interactive labels and highlighting</li>
+                    <li>Zoom, rotate, and pan for different perspectives</li>
+                  </ul>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        <SubstationModelViewer
+          isOpen={substationViewerOpen}
+          onOpenChange={setSubstationViewerOpen}
+        />
+      </>
     );
   }
 
