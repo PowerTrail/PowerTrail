@@ -4,7 +4,8 @@ import type { Substation, WindFarm, SolarPark } from '@/types/powerGrid';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { SubstationModelViewer } from './SubstationModelViewer'; // Changed import path
+import { SubstationModelViewer } from './SubstationModelViewer';
+import { useRouter } from 'next/navigation';
 
 interface PopupProps {
   type: 'substation' | 'windFarm' | 'solarPark';
@@ -57,6 +58,7 @@ function Model3D({ type, className }: IframeProps) {
 
 export function InfrastructurePopup({ type, data }: PopupProps) {
   const [substationViewerOpen, setSubstationViewerOpen] = useState(false);
+  const router = useRouter();
 
   if (type === 'substation') {
     const substation = data as Substation;
@@ -109,25 +111,15 @@ export function InfrastructurePopup({ type, data }: PopupProps) {
                 <div className="aspect-video bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg flex items-center justify-center">
                   <div className="text-center p-6">
                     <Box className="w-12 h-12 mx-auto text-blue-400 mb-2" />
-                    <h3 className="text-lg font-medium text-white mb-2">Interactive Substation Explorer</h3>
-                    <p className="text-gray-300 mb-4">Explore the substation components in our interactive 3D model</p>
+                    <h3 className="text-lg font-medium text-white mb-2">Interactive 3D Explorer</h3>
+                    <p className="text-gray-300 mb-4">Explore this substation in our interactive 3D model</p>
                     <Button 
-                      onClick={() => setSubstationViewerOpen(true)}
+                      onClick={() => router.push('/substation')} 
                       className="bg-blue-600 hover:bg-blue-700 text-white"
                     >
                       Launch 3D Explorer
                     </Button>
                   </div>
-                </div>
-                
-                <div className="text-sm text-gray-600">
-                  <p className="font-medium mb-1">Key Features:</p>
-                  <ul className="list-disc pl-5 space-y-1">
-                    <li>Explore individual substation components</li>
-                    <li>Get detailed information about each part</li>
-                    <li>Interactive labels and highlighting</li>
-                    <li>Zoom, rotate, and pan for different perspectives</li>
-                  </ul>
                 </div>
               </div>
             </TabsContent>
