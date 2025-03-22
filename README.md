@@ -6,10 +6,8 @@ PowerTrail is a powerful tool designed to help you manage and optimize your powe
 ![{CE3AB99C-1007-4A07-8F00-8BC4E04B5253}](https://github.com/user-attachments/assets/c32fefc0-32d4-4a62-ab0a-d574a18bc643)
 
 
-## Features
+## Feature
 
-- Real-time power consumption monitoring
-- Customizable alerts and notifications
 - 3d Model Visualization
 
 ## Installation
@@ -34,7 +32,7 @@ To install PowerTrail, follow these steps:
 To start using PowerTrail, run the following command:
 
 ```bash
-npm start
+npm run dev
 ```
 
 This will launch the application and open it in your default web browser.
