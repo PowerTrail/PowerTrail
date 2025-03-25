@@ -26,7 +26,7 @@ const substationComponents: ComponentInfo[] = [
     name: 'Power Transformer',
     description: 'Transforms voltage between high and low levels. Essential for matching transmission voltages to distribution needs. The core consists of laminated steel sheets to reduce eddy current losses.',
     modelPath: '/models/transformer.glb',
-    position: [2, 0.3, 1],
+    position: [2, 0.8, 1],
     color: '#3498db'
   },
   {
@@ -424,7 +424,8 @@ export default function SubstationExplorer() {
     
     // Function to update label positions
     const updateLabels = () => {
-      if (!cameraRef.current || !containerRef.current) return;
+      // Make sure camera exists before using it
+      if (!cameraRef.current) return;
       
       Object.entries(modelRefs.current).forEach(([id, model]) => {
         const label = labelRefs.current[id];
@@ -437,10 +438,14 @@ export default function SubstationExplorer() {
         // Add offset for better positioning
         position.y += 2;
         
-        // Project to screen coordinates
-        position.project(cameraRef.current);
+        // Project to screen coordinates - ensure camera exists
+        const camera = cameraRef.current;
+        if (!camera) return;  // Additional null check to satisfy TypeScript
+        
+        position.project(camera);  // Now TypeScript knows camera is not null
         
         // Convert to pixel coordinates
+        if (!containerRef.current) return;
         const x = (position.x * 0.5 + 0.5) * containerRef.current.clientWidth;
         const y = (position.y * -0.5 + 0.5) * containerRef.current.clientHeight;
         
