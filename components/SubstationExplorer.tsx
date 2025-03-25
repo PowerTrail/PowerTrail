@@ -34,7 +34,7 @@ const substationComponents: ComponentInfo[] = [
     name: 'Control House',
     description: 'Contains protective relays, batteries, monitoring systems and control equipment. Houses the SCADA systems, protection relays and communication equipment that ensure the safe operation of the substation.',
     modelPath: '/models/Control_Protection.glb',
-    position: [-2, 0.3, 2],
+    position: [-2, 0.4, 2],
     color: '#2ecc71'
   },
   {
@@ -50,7 +50,7 @@ const substationComponents: ComponentInfo[] = [
     name: 'Substation Yard',
     description: 'The main yard containing various equipment including busbars, insulators, and connection elements. This area forms the backbone of the substation, connecting all equipment in a carefully designed layout.',
     modelPath: '/models/Substation_Yard.glb',
-    position: [0, 0.3, 0],
+    position: [0, 0.7, 0],
     scale: [1.5, 1.5, 1.5],
     color: '#f39c12'
   }
@@ -633,7 +633,11 @@ export default function SubstationExplorer() {
       z: newPos.z,
       duration: 0.5,
       ease: "power2.out",
-      onUpdate: () => controls.update()
+      onUpdate: function() {
+        if (controlsRef.current) {
+          controlsRef.current.update();
+        }
+      }
     });
   };
   
@@ -653,7 +657,11 @@ export default function SubstationExplorer() {
       x: 0, y: 0, z: 0,
       duration: 1.5,
       ease: "power2.inOut",
-      onUpdate: () => controlsRef.current?.update()
+      onUpdate: function() {
+        if (controlsRef.current) {
+          controlsRef.current.update();
+        }
+      }
     });
     
     // Reset materials
