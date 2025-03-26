@@ -1,7 +1,7 @@
 # PowerTrail
 
 PowerTrail is a powerful tool designed to help you manage and optimize your power consumption. This project aims to provide an efficient and user-friendly interface for monitoring and controlling power usage.
-![{BE3D11B0-B636-474D-9632-6F782DCD24C5}](https://github.com/user-attachments/assets/e97440cf-9302-4866-b4a2-43c50c043db9)
+![image](https://github.com/user-attachments/assets/f78a6e74-d4de-4e3c-8a74-b78f747560e3)
 
 ## Feature
 
