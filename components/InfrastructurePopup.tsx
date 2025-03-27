@@ -108,25 +108,33 @@ export function InfrastructurePopup({ type, data }: PopupProps) {
   
           {/* Info Section */}
           <TabsContent value="info" className="mt-4">
-            <div className="space-y-4">
+              <div className="space-y-4">
               <h3 className="text-xl font-bold flex items-center gap-2">
-                <Factory className="w-6 h-6 text-blue-500" />
-                {farm.owner}
-              </h3>
-              <InfoItem icon={<Battery className="text-blue-500" />} label="Capacity" value={`${farm.capacity} MW`} />
-              <InfoItem 
-                  icon={<Calendar className="text-green-500" />} 
-                  label="Commissioned" 
-                  value={farm.commissioned_date ?? "N/A"} 
-              />
-            </div>
-          </TabsContent>
+          <Factory className="w-6 h-6 text-blue-500" />
+        {farm.owner}
+    </h3>
+
+    <div className="grid grid-cols-2 gap-3">
+      <InfoItem icon={<Power className="text-green-500" />} label="Capacity" value={`${farm.installed_capacity} MW`} />
+      <InfoItem icon={<Activity className="text-blue-500" />} label="Village" value={farm.village} />
+      {farm.turbine_count && (
+        <InfoItem icon={<Factory className="text-purple-500" />} label="Turbines" value={String(farm.turbine_count)} />
+      )}
+      {farm.avg_wind_speed && (
+        <InfoItem icon={<Gauge className="text-orange-500" />} label="Wind Speed" value={farm.avg_wind_speed} />
+      )}
+    </div>
+  </div>
+</TabsContent>
   
           {/* Technical Details Section */}
           <TabsContent value="technical" className="mt-4">
-            <TechnicalItem label="Turbine Model" value={farm.turbine_model} />
-            <TechnicalItem label="Grid Connection" value={farm.grid_connection} />
-            <TechnicalItem label="Maintenance Schedule" value={farm.maintenance_schedule} />
+            <div className="space-y-3">
+              <TechnicalItem label="Connected to" value={farm.substation} />
+              <TechnicalItem label="Annual Generation" value={farm.annual_generation} />
+              <TechnicalItem label="Commissioned" value={farm.commissioned_date} />
+              <TechnicalItem label="Maintenance" value={farm.maintenance_schedule} />
+            </div>
           </TabsContent>
   
           {/* Video/3D Model Section */}
@@ -157,15 +165,18 @@ export function InfrastructurePopup({ type, data }: PopupProps) {
   
           {/* Info Section */}
           <TabsContent value="info" className="mt-4">
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold flex items-center gap-2">
-                <Box className="w-6 h-6 text-yellow-500" />
-                {park.name}
-              </h3>
-              <InfoItem icon={<Battery className="text-orange-500" />} label="Capacity" value={`${park.capacity} MW`} />
-              <InfoItem icon={<Calendar className="text-green-500" />} label="Commissioned" value={park.commissioned_date as string} />
-            </div>
-          </TabsContent>
+  <div className="space-y-4">
+    <h3 className="text-xl font-bold flex items-center gap-2">
+      <Power className="w-6 h-6 text-green-500" />
+      {park.name}
+    </h3>
+
+    <div className="grid grid-cols-2 gap-3">
+      <InfoItem icon={<Battery className="text-yellow-500" />} label="DC Capacity" value={`${park.total_capacity_dc} MW`} />
+      <InfoItem icon={<Power className="text-green-500" />} label="AC Capacity" value={`${park.total_capacity_ac} MW`} />
+    </div>
+  </div>
+</TabsContent>
   
           {/* Technical Details Section */}
           <TabsContent value="technical" className="mt-4">
