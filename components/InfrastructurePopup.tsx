@@ -114,7 +114,11 @@ export function InfrastructurePopup({ type, data }: PopupProps) {
                 {farm.owner}
               </h3>
               <InfoItem icon={<Battery className="text-blue-500" />} label="Capacity" value={`${farm.capacity} MW`} />
-              <InfoItem icon={<Calendar className="text-green-500" />} label="Commissioned" value={farm.commissioned_date} />
+              <InfoItem 
+                  icon={<Calendar className="text-green-500" />} 
+                  label="Commissioned" 
+                  value={farm.commissioned_date ?? "N/A"} 
+              />
             </div>
           </TabsContent>
   
@@ -159,7 +163,7 @@ export function InfrastructurePopup({ type, data }: PopupProps) {
                 {park.name}
               </h3>
               <InfoItem icon={<Battery className="text-orange-500" />} label="Capacity" value={`${park.capacity} MW`} />
-              <InfoItem icon={<Calendar className="text-green-500" />} label="Commissioned" value={park.commissioned_date} />
+              <InfoItem icon={<Calendar className="text-green-500" />} label="Commissioned" value={park.commissioned_date as string} />
             </div>
           </TabsContent>
   
