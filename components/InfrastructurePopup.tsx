@@ -1,57 +1,29 @@
-import { useState } from 'react';
-import { Activity, Battery, Calendar, Factory, Power, Shield, Zap, Info, Settings, Gauge, Users, Box } from 'lucide-react';
-import type { Substation, WindFarm, SolarPark } from '@/types/powerGrid';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { SubstationModelViewer } from './SubstationModelViewer';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import { Activity, Battery, Calendar, Factory, Power, Shield, Zap, Info, Settings, Gauge, Users, Box } from "lucide-react";
+import type { Substation, WindFarm, SolarPark } from "@/types/powerGrid";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { SubstationModelViewer } from "./SubstationModelViewer";
+import { useRouter } from "next/navigation";
 
 interface PopupProps {
-  type: 'substation' | 'windFarm' | 'solarPark';
+  type: "substation" | "windFarm" | "solarPark";
   data: Substation | WindFarm | SolarPark;
 }
 
-const MODEL_CONFIGS = {
-  substation: {
-    url: 'https://sketchfab.com/models/1e9432d8baac4e169d93b78039cdcba3/embed?autostart=1&ui_controls=1&ui_infos=1&ui_watermark=1',
-    title: 'Electrical Substation 3D Model'
-  },
-  windFarm: {
-    url: 'https://sketchfab.com/models/6c32b85f43424ed8be9d6404a231d85d/embed?autostart=1&ui_controls=1&ui_infos=1&ui_watermark=1',
-    title: 'Wind Farm 3D Model'
-  },
-  solarPark: {
-    url: 'https://sketchfab.com/models/5ad8541772a14b24a196878074aba4af/embed?autostart=1&ui_controls=1&ui_infos=1&ui_watermark=1',
-    title: 'Solar Park 3D Model'
-  }
-};
-
-interface IframeProps {
-  type: keyof typeof MODEL_CONFIGS;
-  className?: string;
-}
-
-function Model3D({ type, className }: IframeProps) {
-  const config = MODEL_CONFIGS[type];
-  const [isLoading, setIsLoading] = useState(true);
-
+// Function now only displays video
+function Model3D({ videoUrl, className }: { videoUrl?: string; className?: string }) {
   return (
-    <div className={cn("relative w-full aspect-video rounded-lg overflow-hidden", className)}>
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900" />
+    <div className={cn("relative w-full space-y-4", className)}>
+      {videoUrl && (
+        <div className="relative w-full aspect-video rounded-lg overflow-hidden">
+          <video controls className="w-full h-full rounded-lg">
+            <source src={'/videos/hehehe.mp4'} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
         </div>
       )}
-      <iframe
-        title={config.title}
-        className="absolute inset-0 w-full h-full"
-        src={config.url}
-        onLoad={() => setIsLoading(false)}
-        allow="autoplay; fullscreen; xr-spatial-tracking"
-        allowFullScreen
-        frameBorder="0"
-      />
     </div>
   );
 }
@@ -60,7 +32,7 @@ export function InfrastructurePopup({ type, data }: PopupProps) {
   const [substationViewerOpen, setSubstationViewerOpen] = useState(false);
   const router = useRouter();
 
-  if (type === 'substation') {
+  if (type === "substation") {
     const substation = data as Substation;
     return (
       <>
@@ -73,8 +45,8 @@ export function InfrastructurePopup({ type, data }: PopupProps) {
               <TabsTrigger value="technical" className="flex items-center gap-2">
                 <Settings className="w-4 h-4" /> Technical
               </TabsTrigger>
-              <TabsTrigger value="3d" className="flex items-center gap-2">
-                <Gauge className="w-4 h-4" /> 3D View
+              <TabsTrigger value="video" className="flex items-center gap-2">
+                <Gauge className="w-4 h-4" /> 3dmodel
               </TabsTrigger>
             </TabsList>
 
@@ -106,35 +78,18 @@ export function InfrastructurePopup({ type, data }: PopupProps) {
               </div>
             </TabsContent>
 
-            <TabsContent value="3d" className="mt-4">
-              <div className="space-y-4">
-                <div className="aspect-video bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg flex items-center justify-center">
-                  <div className="text-center p-6">
-                    <Box className="w-12 h-12 mx-auto text-blue-400 mb-2" />
-                    <h3 className="text-lg font-medium text-white mb-2">Interactive 3D Explorer</h3>
-                    <p className="text-gray-300 mb-4">Explore this substation in our interactive 3D model</p>
-                    <Button 
-                      onClick={() => router.push('/substation')} 
-                      className="bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      Launch 3D Explorer
-                    </Button>
-                  </div>
-                </div>
-              </div>
+            <TabsContent value="video" className="mt-4">
+              <Model3D videoUrl="\videos\hehehe.mp4" />
             </TabsContent>
           </Tabs>
         </div>
 
-        <SubstationModelViewer
-          isOpen={substationViewerOpen}
-          onOpenChange={setSubstationViewerOpen}
-        />
+        <SubstationModelViewer isOpen={substationViewerOpen} onOpenChange={setSubstationViewerOpen} />
       </>
     );
   }
 
-  if (type === 'windFarm') {
+  if (type === "windFarm") {
     const farm = data as WindFarm;
     return (
       <div className="p-4 min-w-[400px] max-w-[600px]">
@@ -146,31 +101,33 @@ export function InfrastructurePopup({ type, data }: PopupProps) {
             <TabsTrigger value="technical" className="flex items-center gap-2">
               <Settings className="w-4 h-4" /> Details
             </TabsTrigger>
-            <TabsTrigger value="3d" className="flex items-center gap-2">
-              <Gauge className="w-4 h-4" /> 3D View
+            <TabsTrigger value="video" className="flex items-center gap-2">
+              <Gauge className="w-4 h-4" /> 3D Model
             </TabsTrigger>
           </TabsList>
-
+  
+          {/* Info Section */}
           <TabsContent value="info" className="mt-4">
-            <div className="space-y-4">
+              <div className="space-y-4">
               <h3 className="text-xl font-bold flex items-center gap-2">
-                <Factory className="w-6 h-6 text-blue-500" />
-                {farm.owner}
-              </h3>
+          <Factory className="w-6 h-6 text-blue-500" />
+        {farm.owner}
+    </h3>
 
-              <div className="grid grid-cols-2 gap-3">
-                <InfoItem icon={<Power className="text-green-500" />} label="Capacity" value={`${farm.installed_capacity} MW`} />
-                <InfoItem icon={<Activity className="text-blue-500" />} label="Village" value={farm.village} />
-                {farm.turbine_count && (
-                  <InfoItem icon={<Factory className="text-purple-500" />} label="Turbines" value={String(farm.turbine_count)} />
-                )}
-                {farm.avg_wind_speed && (
-                  <InfoItem icon={<Gauge className="text-orange-500" />} label="Wind Speed" value={farm.avg_wind_speed} />
-                )}
-              </div>
-            </div>
-          </TabsContent>
-
+    <div className="grid grid-cols-2 gap-3">
+      <InfoItem icon={<Power className="text-green-500" />} label="Capacity" value={`${farm.installed_capacity} MW`} />
+      <InfoItem icon={<Activity className="text-blue-500" />} label="Village" value={farm.village} />
+      {farm.turbine_count && (
+        <InfoItem icon={<Factory className="text-purple-500" />} label="Turbines" value={String(farm.turbine_count)} />
+      )}
+      {farm.avg_wind_speed && (
+        <InfoItem icon={<Gauge className="text-orange-500" />} label="Wind Speed" value={farm.avg_wind_speed} />
+      )}
+    </div>
+  </div>
+</TabsContent>
+  
+          {/* Technical Details Section */}
           <TabsContent value="technical" className="mt-4">
             <div className="space-y-3">
               <TechnicalItem label="Connected to" value={farm.substation} />
@@ -179,16 +136,17 @@ export function InfrastructurePopup({ type, data }: PopupProps) {
               <TechnicalItem label="Maintenance" value={farm.maintenance_schedule} />
             </div>
           </TabsContent>
-
-          <TabsContent value="3d" className="mt-4">
-            <Model3D type="windFarm" />
+  
+          {/* Video/3D Model Section */}
+          <TabsContent value="video" className="mt-4">
+            <Model3D videoUrl="/videos/hehehe.mp4" />
           </TabsContent>
         </Tabs>
       </div>
     );
   }
-
-  if (type === 'solarPark') {
+  
+  if (type === "solarPark") {
     const park = data as SolarPark;
     return (
       <div className="p-4 min-w-[400px] max-w-[600px]">
@@ -200,46 +158,42 @@ export function InfrastructurePopup({ type, data }: PopupProps) {
             <TabsTrigger value="technical" className="flex items-center gap-2">
               <Settings className="w-4 h-4" /> Details
             </TabsTrigger>
-            <TabsTrigger value="3d" className="flex items-center gap-2">
-              <Gauge className="w-4 h-4" /> 3D View
+            <TabsTrigger value="video" className="flex items-center gap-2">
+              <Gauge className="w-4 h-4" /> 3D Model
             </TabsTrigger>
           </TabsList>
-
+  
+          {/* Info Section */}
           <TabsContent value="info" className="mt-4">
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold flex items-center gap-2">
-                <Power className="w-6 h-6 text-green-500" />
-                {park.name}
-              </h3>
+  <div className="space-y-4">
+    <h3 className="text-xl font-bold flex items-center gap-2">
+      <Power className="w-6 h-6 text-green-500" />
+      {park.name}
+    </h3>
 
-              <div className="grid grid-cols-2 gap-3">
-                <InfoItem icon={<Battery className="text-yellow-500" />} label="DC Capacity" value={`${park.total_capacity_dc} MW`} />
-                <InfoItem icon={<Power className="text-green-500" />} label="AC Capacity" value={`${park.total_capacity_ac} MW`} />
-              </div>
-            </div>
-          </TabsContent>
-
+    <div className="grid grid-cols-2 gap-3">
+      <InfoItem icon={<Battery className="text-yellow-500" />} label="DC Capacity" value={`${park.total_capacity_dc} MW`} />
+      <InfoItem icon={<Power className="text-green-500" />} label="AC Capacity" value={`${park.total_capacity_ac} MW`} />
+    </div>
+  </div>
+</TabsContent>
+  
+          {/* Technical Details Section */}
           <TabsContent value="technical" className="mt-4">
-            <div className="space-y-3">
-              {park.connectivity_details && (
-                <TechnicalItem 
-                  label="Connectivity" 
-                  value={typeof park.connectivity_details === 'string' 
-                    ? park.connectivity_details 
-                    : JSON.stringify(park.connectivity_details, null, 2)
-                  } 
-                />
-              )}
-            </div>
+            <TechnicalItem label="Panel Type" value={park.panel_type} />
+            <TechnicalItem label="Grid Connection" value={park.grid_connection} />
+            <TechnicalItem label="Maintenance Schedule" value={park.maintenance_schedule} />
           </TabsContent>
-
-          <TabsContent value="3d" className="mt-4">
-            <Model3D type="solarPark" />
+  
+          {/* Video/3D Model Section */}
+          <TabsContent value="video" className="mt-4">
+            <Model3D videoUrl="/videos/hehehe.mp4" />
           </TabsContent>
         </Tabs>
       </div>
     );
   }
+  
 
   return null;
 }
