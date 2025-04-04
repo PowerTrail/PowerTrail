@@ -107,22 +107,36 @@ export function InfrastructurePopup({ type, data }: PopupProps) {
             </TabsContent>
 
             <TabsContent value="3d" className="mt-4">
-              <div className="space-y-4">
-                <div className="aspect-video bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg flex items-center justify-center">
-                  <div className="text-center p-6">
-                    <Box className="w-12 h-12 mx-auto text-blue-400 mb-2" />
-                    <h3 className="text-lg font-medium text-white mb-2">Interactive 3D Explorer</h3>
-                    <p className="text-gray-300 mb-4">Explore this substation in our interactive 3D model</p>
-                    <Button 
-                      onClick={() => router.push('/substation')} 
-                      className="bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      Launch 3D Explorer
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
+  <div className="space-y-4">
+    <div className="aspect-video bg-gradient-to-b from-gray-900 to-blue-900 rounded-lg flex items-center justify-center overflow-hidden group relative">
+      {/* Animated background with flowing lines */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-1/4 left-0 right-0 h-px bg-blue-400 transform -translate-y-1/2" 
+             style={{filter: 'blur(1px)', animation: 'flowRight 8s linear infinite'}}></div>
+        <div className="absolute top-2/4 left-0 right-0 h-px bg-blue-300 transform -translate-y-1/2" 
+             style={{filter: 'blur(1px)', animation: 'flowRight 12s linear infinite'}}></div>
+        <div className="absolute top-3/4 left-0 right-0 h-px bg-blue-200 transform -translate-y-1/2" 
+             style={{filter: 'blur(1px)', animation: 'flowRight 10s linear infinite'}}></div>
+      </div>
+      
+      <div className="text-center p-6 z-10 transition-transform duration-500 group-hover:scale-105">
+        <div className="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center mx-auto mb-4 backdrop-blur-md border border-blue-500/30">
+          <Box className="w-8 h-8 text-blue-400" />
+        </div>
+        <h3 className="text-xl font-medium text-white mb-2">Interactive 3D Explorer</h3>
+        <p className="text-blue-200 mb-6 max-w-md">
+          Experience an immersive, interactive visualization of the substation components with detailed information and animations.
+        </p>
+        <Button 
+          onClick={() => router.push('/immersive')} 
+          className="bg-blue-600/80 hover:bg-blue-500 text-white backdrop-blur-sm px-6 py-3 rounded-full transition-all duration-300 shadow-lg hover:shadow-blue-500/20"
+        >
+          Launch Experience
+        </Button>
+      </div>
+    </div>
+  </div>
+</TabsContent>
           </Tabs>
         </div>
 
@@ -266,3 +280,10 @@ function TechnicalItem({ label, value }: { label: string; value?: string }) {
     </div>
   );
 }
+
+<style jsx global>{`
+  @keyframes flowRight {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+`}</style>

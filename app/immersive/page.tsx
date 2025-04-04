@@ -19,7 +19,7 @@ const ImmersiveSubstationExplorer = dynamic(
   }
 );
 
-export default function ImmersiveExplorerPage() {
+export default function ImmersivePage() {
   return (
     <div className="h-screen w-full bg-black">
       <Suspense fallback={
